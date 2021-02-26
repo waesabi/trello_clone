@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useDrop } from "react-dnd";
 import { useAppState } from "../context/AppStateContext";
 import { ColumnContainer, ColumnTitle } from "../styles/styles";
+import { useItemDrag } from "../utils/useItemDrag";
 import { AddNewItem } from "./AddNewItem";
 import { Card } from "./card";
+import { DragItem } from "./DragItem";
 
 interface ColumnProps {
   text: string;
@@ -16,9 +19,35 @@ export const Column = ({
   id,
   children,
 }: React.PropsWithChildren<ColumnProps>) => {
+  const [, drop] = useDrop({
+    accept: "COLUMN",
+    hover(item: DragItem) {
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      dispatch({
+        type: "MOVE_LIST",
+        payload: {
+          dragIndex,
+          hoverIndex,
+        },
+      });
+      item.index = hoverIndex;
+    },
+  });
   const { state, dispatch } = useAppState();
+  const ref = useRef<HTMLDivElement>(null);
+  const { drag } = useItemDrag({
+    type: "COLUMN",
+    index,
+    id,
+    text,
+  });
+  drag(drop(ref));
   return (
-    <ColumnContainer>
+    <ColumnContainer ref={ref}>
       <ColumnTitle>{text}</ColumnTitle>
       {state.lists[index].tasks.map((item) => (
         <Card text={item.text} key={item.id} />

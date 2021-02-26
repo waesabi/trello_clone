@@ -1,7 +1,5 @@
-import { type } from "node:os";
 import React from "react";
 import { AddNewItem } from "./components/AddNewItem";
-import { Card } from "./components/card";
 import { Column } from "./components/column";
 import { useAppState } from "./context/AppStateContext";
 import { AppContainer } from "./styles/styles";
